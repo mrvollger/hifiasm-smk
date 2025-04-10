@@ -22,6 +22,7 @@ rule input_reads:
         fi
         """
 
+
 rule yak:
     input:
         parental_reads=get_parental_reads,

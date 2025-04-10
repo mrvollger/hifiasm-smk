@@ -1,6 +1,7 @@
 from snakemake.utils import min_version
 import pandas as pd
 import numpy as np
+
 min_version("8.0")
 
 
@@ -23,6 +24,7 @@ wildcard_constraints:
 
 include: "rules/common.smk"
 include: "rules/asm.smk"
+
 
 HAS_PARENTAL = {}
 final_assemblies = []
