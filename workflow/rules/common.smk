@@ -27,3 +27,14 @@ def get_parental_reads(wc):
         return tbl.loc[wc.sm, "maternal"]
     else:
         raise ValueError(f"Unknown parental type: {wc.parental}")
+
+
+def extra_asm_options(wc):
+    if wc.asm_type == "bp":
+        return ""
+    elif wc.asm_type == "dip":
+        pat_yak = expand(rules.yak.output.yak, parental="pat", asm_type="dip", sm=wc.sm)
+        mat_yak = expand(rules.yak.output.yak, parental="mat", asm_type="dip", sm=wc.sm)
+        return f" -1 {pat_yak} -2 {mat_yak}"
+    else:
+        raise ValueError(f"Unknown assembly type: {wc.asm_type}")
