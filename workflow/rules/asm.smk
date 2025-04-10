@@ -61,7 +61,7 @@ rule hifiasm:
         mem_mb=asm_mem_mb,
         runtime=60 * 24,
     params:
-        extra=lambda wc: " -1 {input.pat} -2 {input.mat}" if HAS_PARENTAL[wc.sm] else "",
+        extra=extra_asm_options,
     conda:
         "../envs/env.yml"
     shell:
