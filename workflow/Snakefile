@@ -1,11 +1,40 @@
 from snakemake.utils import min_version
+import pandas as pd
 
 min_version("8.0")
 
 
+# read a table from the config file with the key "samples" and the file path to hifi data
+print(config)
+
+tbl = pd.read_csv(
+    config["manifest"],
+    sep="\\s+",
+    index_col=0,
+)
+
+
+wildcard_constraints:
+    sm="|".join(tbl.index),
+    hap="|".join(["hap1", "hap2"]),
+    asm_type="bp"
+
+
 include: "rules/common.smk"
+include: "rules/asm.smk"
+
+
+assemblies = expand(
+    rules.gfa_to_fa.output.fa,
+    sm=tbl.index,
+    asm_type=["bp"],
+    hap=["hap1", "hap2"],
+)
+
+
+print(assemblies)
 
 
 rule all:
     input:
-        [],
+        assemblies,
