@@ -8,9 +8,21 @@ version = "0.0.1"
 
 [tasks]
 fmt = "ruff format . && taplo format pixi.toml && snakefmt workflow/"
+test_data = { cmd = [
+    "wget",
+    "-nc",
+    "-O",
+    "test/test.fa.gz",
+    "https://github.com/chhylp123/hifiasm/releases/download/v0.7/chr11-2M.fa.gz",
+    "||",
+    "true",
+] }
 test = { cmd = [
-  "snakemake",
-  # once established you can add more arguments with your test data here
+    "snakemake",
+    "--configfile",
+    "test/test.yaml",
+], depends-on = [
+    "test_data",
 ] }
 snakemake = { cmd = "cd $INIT_CWD && snakemake -s $PIXI_PROJECT_ROOT/workflow/Snakefile" }
 
