@@ -41,3 +41,9 @@ See `test/test.yaml` and `test/test.tbl` for the configuration files used in the
 ```bash
 pixi run snakemake --configfile /path/to/your/config.yaml
 ```
+
+### Submitting to the Hyak HPC via Slurm
+
+```bash
+pixi run snakemake --configfile /path/to/your/config.yaml --profile profiles/slurm-executor
+```
