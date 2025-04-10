@@ -1,6 +1,6 @@
 from snakemake.utils import min_version
 import pandas as pd
-
+import numpy as np
 min_version("8.0")
 
 
@@ -17,24 +17,35 @@ tbl = pd.read_csv(
 wildcard_constraints:
     sm="|".join(tbl.index),
     hap="|".join(["hap1", "hap2"]),
-    asm_type="bp"
+    asm_type="bp|dip",
+    parental="pat|mat",
 
 
 include: "rules/common.smk"
 include: "rules/asm.smk"
 
+HAS_PARENTAL = {}
+final_assemblies = []
+for row in tbl.itertuples():
+    sm = row.Index
+    if pd.isna(row.paternal) or pd.isna(row.maternal):
+        asm_type = "bp"
+        HAS_PARENTAL[sm] = False
+    else:
+        asm_type = "dip"
+        HAS_PARENTAL[sm] = True
+    print(f"Processing {sm} with assembly type {asm_type}")
+    final_assemblies += expand(
+        rules.gfa_to_fa.output.fa,
+        sm=sm,
+        hap=["hap1", "hap2"],
+        asm_type=asm_type,
+    )
 
-assemblies = expand(
-    rules.gfa_to_fa.output.fa,
-    sm=tbl.index,
-    asm_type=["bp"],
-    hap=["hap1", "hap2"],
-)
 
-
-print(assemblies)
+print(final_assemblies)
 
 
 rule all:
     input:
-        assemblies,
+        final_assemblies,
