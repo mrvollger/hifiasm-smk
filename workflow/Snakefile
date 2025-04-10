@@ -20,6 +20,7 @@ wildcard_constraints:
     hap="|".join(["hap1", "hap2"]),
     asm_type="bp|dip",
     parental="pat|mat",
+    read_type="hifi|mat|pat",
 
 
 include: "rules/common.smk"

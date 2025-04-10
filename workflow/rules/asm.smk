@@ -1,9 +1,9 @@
 
 rule input_reads:
     input:
-        reads=lambda wc: tbl.loc[wc.sm, "hifi"],
+        reads=get_input_reads,
     output:
-        reads=temp("temp/{sm}/{sm}.hifi.reads.fa.gz"),
+        reads=temp("temp/{sm}/{sm}.{read_type}.reads.fa.gz"),
     threads: 8
     resources:
         mem_mb=8 * 1024,
