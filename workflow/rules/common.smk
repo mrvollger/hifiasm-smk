@@ -21,6 +21,7 @@ def asm_inputs(wc):
         rtn["mat"] = expand(rules.yak.output.yak, parental="mat", allow_missing=True)
     return rtn
 
+
 def get_input_reads(wc):
     if wc.read_type == "hifi":
         return tbl.loc[wc.sm, "hifi"]
