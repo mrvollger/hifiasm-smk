@@ -12,18 +12,37 @@ def asm_mem_mb(wc, attempt):
 
 def asm_inputs(wc):
     rtn = {}
-    rtn["reads"] = rules.input_reads.output.reads
+    rtn["reads"] = rules.input_reads.output.reads.format(
+        sm=wc.sm,
+        read_type="hifi",
+    )
     if HAS_PARENTAL[wc.sm]:
         rtn["pat"] = expand(rules.yak.output.yak, parental="pat", allow_missing=True)
         rtn["mat"] = expand(rules.yak.output.yak, parental="mat", allow_missing=True)
     return rtn
 
+def get_input_reads(wc):
+    if wc.read_type == "hifi":
+        return tbl.loc[wc.sm, "hifi"]
+    elif wc.read_type == "mat":
+        return tbl.loc[wc.sm, "maternal"]
+    elif wc.read_type == "pat":
+        return tbl.loc[wc.sm, "paternal"]
+    else:
+        raise ValueError(f"Unknown read type: {wc.read_type}")
+
 
 def get_parental_reads(wc):
     if wc.parental == "pat":
-        return tbl.loc[wc.sm, "paternal"]
+        return rules.input_reads.output.reads.format(
+            sm=wc.sm,
+            read_type="pat",
+        )
     elif wc.parental == "mat":
-        return tbl.loc[wc.sm, "maternal"]
+        return rules.input_reads.output.reads.format(
+            sm=wc.sm,
+            read_type="mat",
+        )
     else:
         raise ValueError(f"Unknown parental type: {wc.parental}")
 
