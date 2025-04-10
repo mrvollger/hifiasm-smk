@@ -22,10 +22,26 @@ rule input_reads:
         fi
         """
 
+rule yak:
+    input:
+        parental_reads=get_parental_reads,
+    output:
+        yak=temp("temp/{sm}/{sm}.{parental}.yak"),
+    threads: 16
+    resources:
+        mem_mb=100 * 1024,
+        runtime=60 * 4,
+    conda:
+        "../envs/env.yml"
+    shell:
+        """
+        yak count -k31 -b37 -t {threads} -o {output.yak} {input.parental_reads} {input.parental_reads}
+        """
+
 
 rule hifiasm:
     input:
-        reads=rules.input_reads.output.reads,
+        unpack(asm_inputs),
     output:
         hap1="results/{sm}/{sm}.{asm_type}.hap1.p_ctg.gfa",
         lowQ1="results/{sm}/{sm}.{asm_type}.hap1.p_ctg.lowQ.bed",
@@ -50,7 +66,11 @@ rule hifiasm:
         """
         out_dir=results/{wildcards.sm}/{wildcards.sm}
         mkdir -p $out_dir
-        hifiasm -o $out_dir -t {threads} {input.reads}
+        if [[ {wildcards.sm}=="dip" ]]; then
+            hifiasm -o $out_dir -t {threads} {input.reads} -1 {input.pat} -2 {input.mat}
+        else
+            hifiasm -o $out_dir -t {threads} {input.reads}
+        fi
         """
 
 
