@@ -60,17 +60,15 @@ rule hifiasm:
     resources:
         mem_mb=asm_mem_mb,
         runtime=60 * 24,
+    params:
+        extra=lambda wc: " -1 {input.pat} -2 {input.mat}" if HAS_PARENTAL[wc.sm] else "",
     conda:
         "../envs/env.yml"
     shell:
         """
         out_dir=results/{wildcards.sm}/{wildcards.sm}
         mkdir -p $out_dir
-        if [[ {wildcards.sm}=="dip" ]]; then
-            hifiasm -o $out_dir -t {threads} {input.reads} -1 {input.pat} -2 {input.mat}
-        else
-            hifiasm -o $out_dir -t {threads} {input.reads}
-        fi
+        hifiasm -o $out_dir -t {threads} {input.reads} {params.extra}
         """
 
 
