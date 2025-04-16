@@ -133,6 +133,6 @@ rule bam_to_paf:
     shell:
         """
         samtools view -h -@ {threads} {input.bam} \
-            paftools.js sam2paf -L - \
+            | paftools.js sam2paf - \
             > {output.paf}
         """
