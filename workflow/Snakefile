@@ -47,7 +47,9 @@ for row in tbl.itertuples():
 
 
 print(results)
+REF = []
 if config.get("reference") is not None:
+    REF = config["reference"]
     for sm in tbl.index:
         asm_type = "bp" if not HAS_PARENTAL[sm] else "dip"
         results += expand(
