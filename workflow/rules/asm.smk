@@ -91,3 +91,47 @@ rule gfa_to_fa:
         gfatools gfa2fa {input.gfa} | bgzip -@ {threads} > {output.fa}
         samtools faidx {output.fa}
         """
+
+# align the assemblies to a reference using minimap2 if a reference is provided in the config
+rule align:
+    input:
+        fa="results/assemblies/{sm}.{asm_type}.{hap}.fa.gz",
+        ref=config.get("reference"),
+    output:
+        bam="results/alignments/{sm}.{asm_type}.{hap}.bam",
+        index="results/alignments/{sm}.{asm_type}.{hap}.bam.csi",
+    threads: 16
+    resources:
+        mem_mb=64 * 1024,
+        runtime=60 * 4,
+    conda:
+        "../envs/env.yml"
+    params:
+        mm2_opts=config.get("mm2_opts", "-x asm20 --secondary=no -s 25000 -K 8G"),
+    shell:
+        """
+        minimap2 --cs --eqx -a {params.mm2_opts} \
+             {input.ref} {input.fa} \
+            | samtools view -F 4 -u -@ {threads} \
+            | samtools sort -m 2G -@ {threads} \
+                --write-index -o {output.bam}
+        """
+
+rule bam_to_paf:
+    input:
+        bam=rules.align.output.bam,
+    output:
+        paf="results/alignments/{sm}.{asm_type}.{hap}.paf",
+    threads: 4
+    resources:
+        mem_mb=16 * 1024,
+        runtime=60 * 4,
+    conda:
+        "../envs/env.yml"
+    shell:
+        """
+        samtools view -h -@ {threads} {input.bam} \
+            paftools.js sam2paf -L - \
+            > {output.paf}
+        """
+    
