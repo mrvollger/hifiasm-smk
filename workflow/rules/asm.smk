@@ -92,6 +92,7 @@ rule gfa_to_fa:
         samtools faidx {output.fa}
         """
 
+
 # align the assemblies to a reference using minimap2 if a reference is provided in the config
 rule align:
     input:
@@ -117,6 +118,7 @@ rule align:
                 --write-index -o {output.bam}
         """
 
+
 rule bam_to_paf:
     input:
         bam=rules.align.output.bam,
@@ -134,4 +136,3 @@ rule bam_to_paf:
             paftools.js sam2paf -L - \
             > {output.paf}
         """
-    
