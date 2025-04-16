@@ -97,7 +97,7 @@ rule gfa_to_fa:
 rule align:
     input:
         fa="results/assemblies/{sm}.{asm_type}.{hap}.fa.gz",
-        ref=config.get("reference"),
+        ref=REF,
     output:
         bam="results/alignments/{sm}.{asm_type}.{hap}.bam",
         index="results/alignments/{sm}.{asm_type}.{hap}.bam.csi",
