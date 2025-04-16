@@ -14,19 +14,6 @@ tbl = pd.read_csv(
     index_col=0,
 )
 
-
-wildcard_constraints:
-    sm="|".join(tbl.index),
-    hap="|".join(["hap1", "hap2"]),
-    asm_type="bp|dip",
-    parental="pat|mat",
-    read_type="hifi|mat|pat",
-
-
-include: "rules/common.smk"
-include: "rules/asm.smk"
-
-
 HAS_PARENTAL = {}
 results = []
 for row in tbl.itertuples():
@@ -46,7 +33,6 @@ for row in tbl.itertuples():
     )
 
 
-print(results)
 REF = []
 if config.get("reference") is not None:
     REF = config["reference"]
@@ -59,6 +45,17 @@ if config.get("reference") is not None:
             asm_type=asm_type,
         )
 
+
+wildcard_constraints:
+    sm="|".join(tbl.index),
+    hap="|".join(["hap1", "hap2"]),
+    asm_type="bp|dip",
+    parental="pat|mat",
+    read_type="hifi|mat|pat",
+
+
+include: "rules/common.smk"
+include: "rules/asm.smk"
 
 rule all:
     input:
