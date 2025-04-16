@@ -1,1 +1,2 @@
 manifest: "test/test.tbl"
+reference: "test/test.fa.gz"

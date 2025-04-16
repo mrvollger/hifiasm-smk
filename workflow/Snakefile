@@ -28,7 +28,7 @@ include: "rules/asm.smk"
 
 
 HAS_PARENTAL = {}
-final_assemblies = []
+results = []
 for row in tbl.itertuples():
     sm = row.Index
     if pd.isna(row.paternal) or pd.isna(row.maternal):
@@ -38,7 +38,7 @@ for row in tbl.itertuples():
         asm_type = "dip"
         HAS_PARENTAL[sm] = True
     print(f"Processing {sm} with assembly type {asm_type}")
-    final_assemblies += expand(
+    results += expand(
         rules.gfa_to_fa.output.fa,
         sm=sm,
         hap=["hap1", "hap2"],
@@ -46,9 +46,16 @@ for row in tbl.itertuples():
     )
 
 
-print(final_assemblies)
+print(results)
+if config.get("references") is not None:
+    results += expand(
+        rules.bam_to_paf.output.paf,
+        sm=tbl.index,
+        hap=["hap1", "hap2"],
+        asm_type="ref",
+    )
 
 
 rule all:
     input:
-        final_assemblies,
+        results,

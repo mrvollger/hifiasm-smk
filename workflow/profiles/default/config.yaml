@@ -7,5 +7,5 @@ software-deployment-method:
   - conda
 printshellcmds: True
 show-failed-logs: True
-cores: 32
+cores: 64
 local-cores: 4
