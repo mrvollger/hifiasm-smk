@@ -47,13 +47,15 @@ for row in tbl.itertuples():
 
 
 print(results)
-if config.get("references") is not None:
-    results += expand(
-        rules.bam_to_paf.output.paf,
-        sm=tbl.index,
-        hap=["hap1", "hap2"],
-        asm_type="ref",
-    )
+if config.get("reference") is not None:
+    for sm in tbl.index:
+        asm_type = "bp" if not HAS_PARENTAL[sm] else "dip"
+        results += expand(
+            rules.bam_to_paf.output.paf,
+            sm=sm,
+            hap=["hap1", "hap2"],
+            asm_type=asm_type,
+        )
 
 
 rule all:
