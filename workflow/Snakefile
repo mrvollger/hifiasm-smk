@@ -59,7 +59,7 @@ for row in tbl.itertuples():
     )
 
 
-if config.get("references") is not None:
+if REFS:
     for ref in references.keys():
         for sm in tbl.index:
             asm_type = "bp" if not HAS_PARENTAL[sm] else "dip"
