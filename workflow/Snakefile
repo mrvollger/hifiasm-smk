@@ -13,7 +13,19 @@ tbl = pd.read_csv(
     sep="\\s+",
     index_col=0,
 )
-REF = config.get("reference", [])
+
+# make the references
+references = config.get("references", {})
+if not references:
+    t2t="/mmfs1/gscratch/stergachislab/assemblies/T2Tv2.0_maskedY.fa"
+    if os.path.exists(t2t):
+        references["T2T-CHM13v2.0"] = t2t
+    hg38="/mmfs1/gscratch/stergachislab/assemblies/simple-names/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna"
+    if os.path.exists(hg38):
+        references["GRCh38"] = hg38
+REFS = references
+
+
 
 wildcard_constraints:
     sm="|".join(tbl.index),
@@ -21,6 +33,7 @@ wildcard_constraints:
     asm_type="bp|dip",
     parental="pat|mat",
     read_type="hifi|mat|pat",
+    ref="|".join(references.keys()),
 
 
 include: "rules/common.smk"
@@ -46,17 +59,19 @@ for row in tbl.itertuples():
     )
 
 
-print(results)
-if config.get("reference") is not None:
-    for sm in tbl.index:
-        asm_type = "bp" if not HAS_PARENTAL[sm] else "dip"
-        results += expand(
-            rules.bam_to_paf.output.paf,
-            sm=sm,
-            hap=["hap1", "hap2"],
-            asm_type=asm_type,
-        )
+if config.get("references") is not None:
+    for ref in references.keys():
+        for sm in tbl.index:
+            asm_type = "bp" if not HAS_PARENTAL[sm] else "dip"
+            results += expand(
+                rules.bam_to_paf.output.paf,
+                sm=sm,
+                hap=["hap1", "hap2"],
+                asm_type=asm_type,
+                ref=ref,
+            )
 
+print(f"Results: {results}")
 
 rule all:
     input:

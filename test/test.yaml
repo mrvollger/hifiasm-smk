@@ -1,2 +1,4 @@
 manifest: "test/test.tbl"
-reference: "test/test.fa.gz"
+references:
+  test1_ref: "test/test.fa.gz"
+  test2_ref: "test/test.fa.gz"
