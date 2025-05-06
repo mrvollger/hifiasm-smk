@@ -57,3 +57,7 @@ def extra_asm_options(wc):
         return f" -1 {pat_yak} -2 {mat_yak}"
     else:
         raise ValueError(f"Unknown assembly type: {wc.asm_type}")
+
+
+def get_ref(wc):
+    return REFS[wc.ref]

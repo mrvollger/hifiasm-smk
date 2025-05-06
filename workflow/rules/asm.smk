@@ -97,10 +97,10 @@ rule gfa_to_fa:
 rule align:
     input:
         fa="results/assemblies/{sm}.{asm_type}.{hap}.fa.gz",
-        ref=REF,
+        ref=get_ref,
     output:
-        bam="results/alignments/{sm}.{asm_type}.{hap}.bam",
-        index="results/alignments/{sm}.{asm_type}.{hap}.bam.csi",
+        bam="results/alignments/{ref}/{sm}.{asm_type}.{hap}.bam",
+        index="results/alignments/{ref}/{sm}.{asm_type}.{hap}.bam.csi",
     threads: 16
     resources:
         mem_mb=64 * 1024,
@@ -111,7 +111,7 @@ rule align:
         mm2_opts=config.get("mm2_opts", "-x asm20 --secondary=no -s 25000 -K 8G"),
     shell:
         """
-        minimap2 --cs --eqx -a {params.mm2_opts} \
+        minimap2 --MD --cs --eqx -a {params.mm2_opts} \
              {input.ref} {input.fa} \
             | samtools view -F 4 -u -@ {threads} \
             | samtools sort -m 2G -@ {threads} \
@@ -123,7 +123,7 @@ rule bam_to_paf:
     input:
         bam=rules.align.output.bam,
     output:
-        paf="results/alignments/{sm}.{asm_type}.{hap}.paf",
+        paf="results/alignments/{ref}/{sm}.{asm_type}.{hap}.paf",
     threads: 4
     resources:
         mem_mb=16 * 1024,
