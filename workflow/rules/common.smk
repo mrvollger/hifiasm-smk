@@ -61,3 +61,15 @@ def extra_asm_options(wc):
 
 def get_ref(wc):
     return REFS[wc.ref]
+
+
+def set_references():
+    references = config.get("references", {})
+    if not references:
+        t2t = "/mmfs1/gscratch/stergachislab/assemblies/T2Tv2.0_maskedY.fa"
+        if os.path.exists(t2t):
+            references["T2T-CHM13v2.0"] = t2t
+        hg38 = "/mmfs1/gscratch/stergachislab/assemblies/simple-names/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna"
+        if os.path.exists(hg38):
+            references["GRCh38"] = hg38
+    return references
