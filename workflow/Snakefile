@@ -4,26 +4,19 @@ import numpy as np
 
 min_version("8.0")
 
-
-# read a table from the config file with the key "samples" and the file path to hifi data
-print(config)
-
+# read in the manifest of samples
 tbl = pd.read_csv(
     config["manifest"],
     sep="\\s+",
     index_col=0,
 )
 
+# include the helper functions
+include: "rules/common.smk"
+
+
 # make the references
-references = config.get("references", {})
-if not references:
-    t2t = "/mmfs1/gscratch/stergachislab/assemblies/T2Tv2.0_maskedY.fa"
-    if os.path.exists(t2t):
-        references["T2T-CHM13v2.0"] = t2t
-    hg38 = "/mmfs1/gscratch/stergachislab/assemblies/simple-names/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna"
-    if os.path.exists(hg38):
-        references["GRCh38"] = hg38
-REFS = references
+REFS = set_references()
 
 
 wildcard_constraints:
@@ -32,13 +25,12 @@ wildcard_constraints:
     asm_type="bp|dip",
     parental="pat|mat",
     read_type="hifi|mat|pat",
-    ref="|".join(references.keys()),
+    ref="|".join(REFS.keys()),
 
-
-include: "rules/common.smk"
+# include the rules
 include: "rules/asm.smk"
 
-
+# define the output files based on the assembly type 
 HAS_PARENTAL = {}
 results = []
 for row in tbl.itertuples():
@@ -59,7 +51,7 @@ for row in tbl.itertuples():
 
 
 if REFS:
-    for ref in references.keys():
+    for ref in REFS.keys():
         for sm in tbl.index:
             asm_type = "bp" if not HAS_PARENTAL[sm] else "dip"
             results += expand(
@@ -71,6 +63,8 @@ if REFS:
             )
 
 print(f"Results: {results}")
+
+
 
 
 rule all:
