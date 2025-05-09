@@ -51,7 +51,7 @@ sample hifi paternal maternal
 GM12878 /path/to/hifi_reads.fastq.gz /path/to/paternal_reads.fastq.gz /path/to/maternal_reads.fastq.gz
 ```
 
-The inputs need not be in fastq format, bam, sam, cram, and fasta are also supported. The workflow will automatically detect the file type and run the appropriate tools.
+The inputs need not be in fastq format: bam, sam, cram, and fasta are also supported. The workflow will automatically detect the file type and run the appropriate tools.
 
 If you don't have paternal or maternal data you can replace the paths with "NA". For example:
 
