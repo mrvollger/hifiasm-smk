@@ -46,20 +46,22 @@ manifest: test/test.tbl
 
 The manifest file should be a space-separated file of the following format:
 
-````
+```
 sample hifi paternal maternal
 GM12878 /path/to/hifi_reads.fastq.gz /path/to/paternal_reads.fastq.gz /path/to/maternal_reads.fastq.gz
 ```
+
 If you don't have paternal or maternal data you can replace the paths with "NA". For example:
 
 ```
 sample hifi paternal maternal
 GM12878 /path/to/hifi_reads.fastq.gz NA NA
 ```
+
 You can also add as many samples as you want. The workflow will run for all the samples in the manifest.
 
 ### Submitting to the Hyak HPC via Slurm
 
 ```bash
 pixi run snakemake --configfile /path/to/your/config.yaml --profile profiles/slurm-executor
-````
+```
