@@ -12,7 +12,7 @@ def asm_mem_mb(wc, attempt):
 
 def asm_inputs(wc):
     rtn = {}
-    rtn["reads"] = rules.input_reads.output.reads.format(
+    rtn["reads"] = rules.merge_input_reads.output.reads.format(
         sm=wc.sm,
         read_type="hifi",
     )
@@ -23,24 +23,39 @@ def asm_inputs(wc):
 
 
 def get_input_reads(wc):
+    idx = int(wc.idx)
     if wc.read_type == "hifi":
-        return tbl.loc[wc.sm, "hifi"]
+        return tbl.loc[wc.sm, "hifi"][idx]
     elif wc.read_type == "mat":
-        return tbl.loc[wc.sm, "maternal"]
+        return tbl.loc[wc.sm, "maternal"][idx]
     elif wc.read_type == "pat":
-        return tbl.loc[wc.sm, "paternal"]
+        return tbl.loc[wc.sm, "paternal"][idx]
     else:
         raise ValueError(f"Unknown read type: {wc.read_type}")
 
+def get_inputs_to_merge(wc):
+    read_type = wc.read_type
+    if read_type == "pat":
+        read_type = "paternal"
+    elif read_type == "mat":
+        read_type = "maternal"
+    files = tbl.loc[wc.sm, read_type] 
+    n_files = len(files)
+    return expand(
+        rules.input_reads.output.reads,
+        sm=wc.sm,
+        read_type=wc.read_type,
+        idx=[i for i in range(n_files)],
+    )    
 
 def get_parental_reads(wc):
     if wc.parental == "pat":
-        return rules.input_reads.output.reads.format(
+        return rules.merge_input_reads.output.reads.format(
             sm=wc.sm,
             read_type="pat",
         )
     elif wc.parental == "mat":
-        return rules.input_reads.output.reads.format(
+        return rules.merge_input_reads.output.reads.format(
             sm=wc.sm,
             read_type="mat",
         )

@@ -1,3 +1,4 @@
 sample hifi paternal maternal
 test test/test.fa.gz NA NA
 test_parental test/test.fa.gz test/test.fa.gz test/test.fa.gz
+test_multi_in test/test.fa.gz,test/test.fa.gz test/test.fa.gz test/test.fa.gz,test/test.fa.gz

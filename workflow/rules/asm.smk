@@ -3,7 +3,7 @@ rule input_reads:
     input:
         reads=get_input_reads,
     output:
-        reads=temp("temp/{sm}/{sm}.{read_type}.reads.fa.gz"),
+        reads=temp("temp/{sm}/{sm}.{read_type}.{idx}.reads.fa.gz"),
     threads: 8
     resources:
         mem_mb=8 * 1024,
@@ -22,6 +22,22 @@ rule input_reads:
         fi
         """
 
+
+rule merge_input_reads:
+    input:
+        reads=get_inputs_to_merge,
+    output:
+        reads=temp("temp/{sm}/{sm}.{read_type}.reads.fa.gz"),
+    threads: 8
+    resources:
+        mem_mb=8 * 1024,
+        runtime=60 * 4,
+    conda:
+        "../envs/env.yml"
+    shell:
+        """
+        cat {input} > {output.reads}
+        """
 
 rule yak:
     input:

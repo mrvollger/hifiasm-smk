@@ -10,6 +10,11 @@ tbl = pd.read_csv(
     sep="\\s+",
     index_col=0,
 )
+# the columns with reads can have multiple entries, so we need to split them
+tbl["hifi"] = tbl["hifi"].str.split(",")
+tbl["maternal"] = tbl["maternal"].str.split(",")
+tbl["paternal"] = tbl["paternal"].str.split(",")
+# make them lists even if they are empty
 
 # include the helper functions
 include: "rules/common.smk"
@@ -25,6 +30,7 @@ wildcard_constraints:
     asm_type="bp|dip",
     parental="pat|mat",
     read_type="hifi|mat|pat",
+    idx=r"\d+",
     ref="|".join(REFS.keys()),
 
 # include the rules
@@ -35,12 +41,15 @@ HAS_PARENTAL = {}
 results = []
 for row in tbl.itertuples():
     sm = row.Index
-    if pd.isna(row.paternal) or pd.isna(row.maternal):
+    # check if it is a list
+    if type(row.paternal) is list and len(row.paternal) > 0 and len(row.maternal) > 0:
+        asm_type = "dip"
+        HAS_PARENTAL[sm] = True
+    elif pd.isna(row.paternal) or pd.isna(row.maternal):
         asm_type = "bp"
         HAS_PARENTAL[sm] = False
     else:
-        asm_type = "dip"
-        HAS_PARENTAL[sm] = True
+        ValueError(f"Unknown assembly type for {sm}, shouldn't be here")
     print(f"Processing {sm} with assembly type {asm_type}")
     results += expand(
         rules.gfa_to_fa.output.fa,
