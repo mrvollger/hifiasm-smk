@@ -33,20 +33,22 @@ def get_input_reads(wc):
     else:
         raise ValueError(f"Unknown read type: {wc.read_type}")
 
+
 def get_inputs_to_merge(wc):
     read_type = wc.read_type
     if read_type == "pat":
         read_type = "paternal"
     elif read_type == "mat":
         read_type = "maternal"
-    files = tbl.loc[wc.sm, read_type] 
+    files = tbl.loc[wc.sm, read_type]
     n_files = len(files)
     return expand(
         rules.input_reads.output.reads,
         sm=wc.sm,
         read_type=wc.read_type,
         idx=[i for i in range(n_files)],
-    )    
+    )
+
 
 def get_parental_reads(wc):
     if wc.parental == "pat":

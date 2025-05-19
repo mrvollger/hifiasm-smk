@@ -9,12 +9,19 @@ tbl = pd.read_csv(
     config["manifest"],
     sep="\\s+",
     index_col=0,
+    dtype={
+        "sample": str,
+        "hifi": str,
+        "paternal": str,
+        "maternal": str,
+    },
 )
 # the columns with reads can have multiple entries, so we need to split them
 tbl["hifi"] = tbl["hifi"].str.split(",")
 tbl["maternal"] = tbl["maternal"].str.split(",")
 tbl["paternal"] = tbl["paternal"].str.split(",")
 # make them lists even if they are empty
+
 
 # include the helper functions
 include: "rules/common.smk"
@@ -33,10 +40,12 @@ wildcard_constraints:
     idx=r"\d+",
     ref="|".join(REFS.keys()),
 
+
 # include the rules
 include: "rules/asm.smk"
 
-# define the output files based on the assembly type 
+
+# define the output files based on the assembly type
 HAS_PARENTAL = {}
 results = []
 for row in tbl.itertuples():
@@ -72,8 +81,6 @@ if REFS:
             )
 
 print(f"Results: {results}")
-
-
 
 
 rule all:

@@ -39,6 +39,7 @@ rule merge_input_reads:
         cat {input} > {output.reads}
         """
 
+
 rule yak:
     input:
         parental_reads=get_parental_reads,
